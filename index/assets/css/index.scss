@@ -1,0 +1,12 @@
+﻿@import "../../../assets/css/base.scss";
+$viewW:640px;
+
+.zmiti-index-main-ui{
+  background: #fff;
+  width: $viewW;
+  height: 100%;
+  @include pos(a);
+  left: 0;
+  top: 0;
+  z-index: 1000;
+}
