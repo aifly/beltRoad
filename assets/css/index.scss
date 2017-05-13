@@ -323,7 +323,7 @@ $viewW:640px;
   }
   .zmiti-talk-content{
     aside:first-of-type{
-      color:#365a9b;
+      color:#eee;
       @include transform(scale(.9) translate3d(0,-6px,0));
       @include transformOrigin(left);
     }
