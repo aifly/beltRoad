@@ -66,7 +66,7 @@ $viewW:640px;
   .zmiti-member{
     width:$viewW - 70;
     margin: 25px auto;
-    background: #ccc;
+    background: #999;
     @include br(5px);
     color:#fff;
     padding: 14px 20px;
@@ -87,10 +87,12 @@ $viewW:640px;
   width:570px;
   margin:20px auto;
   text-align: center;
-  background:#ccc;
+  background:#999;
   color:#fff;
-  padding:6px 0;
+  font-size: 24px;
+  padding:6px ;
   @include br(5px);
+  box-sizing:border-box;
 }
 .zmiti-talk-C{
   width:$viewW - 70;
@@ -189,7 +191,7 @@ $viewW:640px;
               }
               &:before{
                 content:'';
-                right:-11px;
+                right:-10px;
                 left: auto;
                 background: #a7e753;
                 border-left: none;
@@ -238,7 +240,7 @@ $viewW:640px;
         &:before{
           content:'';
           @include pos(a);
-          left:-11px;
+          left:-10px;
           @include br(3px);
           width:20px;
           height: 20px;
@@ -321,7 +323,7 @@ $viewW:640px;
   }
   .zmiti-talk-content{
     aside:first-of-type{
-      color:#666666;
+      color:#eee;
       @include transform(scale(.9) translate3d(0,-6px,0));
       @include transformOrigin(left);
     }

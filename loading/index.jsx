@@ -19,7 +19,7 @@ class ZmitiLoadingApp extends Component {
 		return (
 			<div className='zmiti-loading-ui' style={mainStyle}>
 				  <a href="#">
-				  		<section className='zmiti-head' style={{background:'url('+(this.props.myHeadImg || './assets/images/zmiti.jpg')+') no-repeat center / cover'}}></section>
+				  		<section className='zmiti-head' style={{background:'url('+(this.props.myHeadImg || './assets/images/logo.png')+') no-repeat center / cover'}}></section>
 				        <div className="line1"></div>
 				        <div className="line2"></div>
 				        <div className="line3"></div>

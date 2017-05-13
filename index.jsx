@@ -6,6 +6,8 @@ injectTapEventPlugin();
 import IScroll from 'iscroll';
 import './assets/css/index.css';
 
+import Obserable from './assets/js/obserable.js';
+var obserable = new Obserable();
 import ZmitiLoadingApp from './loading/index.jsx';
 import ZmitiIndexApp from './index/index.jsx';
 export class App extends Component {
@@ -23,7 +25,8 @@ export class App extends Component {
 			myHeadImg:'',
 			progress:'0%',
 			loadingImg:[],
-			showLoading:false,
+			indexActive:'',
+			showLoading:true,
 			talkObj:{
 				date:'3月4日',
 				member:[
@@ -40,7 +43,11 @@ export class App extends Component {
 		
 		var mainStyle={};
 		if(this.state.talkObj.background){
-			mainStyle.background = 'url('+this.state.talkObj.background+') no-repeat center / cover'
+			mainStyle.background = 'url('+this.state.talkObj.background+') no-repeat center bottom / cover'
+		}
+
+		var data ={
+			obserable
 		}
 
 		return (
@@ -48,7 +55,7 @@ export class App extends Component {
 				{this.state.showLoading && <ZmitiLoadingApp {...this.state}></ZmitiLoadingApp>}
 				{this.state.talkObj.bgSound && <audio preload='auto' ref='audio' src={this.state.talkObj.bgSound} autoPlay loop></audio>}
 				<audio src='./assets/music/talk.mp3' ref='talkAudio' preload='auto'></audio>
-				<ZmitiIndexApp {...this.state}></ZmitiIndexApp>
+				{!this.state.showLoading&& <ZmitiIndexApp className={this.state.indexActive} {...this.state} {...data}></ZmitiIndexApp>}
 				<section className='zmiti-scroll-C' ref='zmiti-scroll-C' style={{height:this.viewH - 85}}>
 					<div ref='scroller' className={'zmiti-scroller'} style={{paddingBottom:20,WebkitTransform:'translate3d(0,'+this.state.scrollTop+'px,0)'}}>
 						{<section style={{display:'none'}} className='zmiti-date'><span>{this.state.talkObj.date}</span></section>}
@@ -90,7 +97,7 @@ export class App extends Component {
 																{item.linkObj && (item.linkObj.img || item.linkObj.title||item.linkObj.href ||item.linkObj.desc) && <div onTouchTap={this.displayFrame.bind(this,item.linkObj.href)} className='zmiti-linkobj-C zmiti-linkobj-isMe'>
 																<section>{item.linkObj.title}</section>
 																<section>{item.linkObj.desc}</section>
-																<section style={{background:'url('+(item.linkObj.img || './assets/images/zmiti.jpg')+') no-repeat center / cover'}}></section>
+																<section style={{background:'url('+(item.linkObj.img || './assets/images/logo1.png')+') no-repeat center / cover'}}></section>
 															</div>}
 
 
@@ -99,7 +106,7 @@ export class App extends Component {
 														</aside>
 
 													</div>
-													<div className='zmiti-talk-head' style={{background:'url('+(item.head||'./assets/images/zmiti.jpg')+') no-repeat center / cover'}}>
+													<div className='zmiti-talk-head' style={{background:'url('+(item.head||'./assets/images/logo1.png')+') no-repeat center / cover'}}>
 													</div>
 												</li>
 									}
@@ -122,7 +129,7 @@ export class App extends Component {
 													{item.linkObj && (item.linkObj.img || item.linkObj.title||item.linkObj.href ||item.linkObj.desc) && <div className='zmiti-linkobj-C' onTouchTap={this.displayFrame.bind(this,item.linkObj.href)}>
 																<section>{item.linkObj.title}</section>
 																<section>{item.linkObj.desc}</section>
-																<section style={{background:'url('+(item.linkObj.img || './assets/images/zmiti.jpg')+') no-repeat center / cover'}}></section>
+																<section style={{background:'url('+(item.linkObj.img || './assets/images/logo1.png')+') no-repeat center / cover'}}></section>
 															</div>}
 												</div>
 											</aside>
@@ -286,8 +293,76 @@ export class App extends Component {
 			this.refs['audio-'+i].pause();	
 		}
 		return false;
-
 	}
+
+	wxConfig(title,desc,img,appId='wxfacf4a639d9e3bcc',worksid){
+			var s = this;
+		   var durl = location.href.split('#')[0]; //window.location;
+		        var code_durl = encodeURIComponent(durl);
+			$.ajax({
+				type:'get',
+				url: "http://api.zmiti.com/weixin/jssdk.php?type=signature&durl="+code_durl+"&worksid="+worksid,
+				dataType:'jsonp',
+				jsonp: "callback",
+			    jsonpCallback: "jsonFlickrFeed",
+			    success(data){
+
+			    	wx.config({
+							    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+							    appId:appId, // 必填，公众号的唯一标识
+							    timestamp:'1488558145' , // 必填，生成签名的时间戳
+							    nonceStr: 'Wm3WZYTPz0wzccnW', // 必填，生成签名的随机串
+							    signature: data.signature,// 必填，签名，见附录1
+							    jsApiList: [ 'checkJsApi',
+											'onMenuShareTimeline',
+											'onMenuShareAppMessage',
+											'onMenuShareQQ',
+											'onMenuShareWeibo',
+											'hideMenuItems',
+											'showMenuItems',
+											
+									] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+							});
+
+			    	wx.ready(()=>{
+			    		
+			    			 		//朋友圈
+	                    wx.onMenuShareTimeline({
+	                        title: title, // 分享标题
+	                        link: durl, // 分享链接
+	                        imgUrl: img, // 分享图标
+	                        desc: desc,
+	                        success: function () { },
+	                        cancel: function () { }
+	                    });
+	                    //朋友
+	                    wx.onMenuShareAppMessage({
+	                        title: title, // 分享标题
+	                        link: durl, // 分享链接
+	                        imgUrl: img, // 分享图标
+	                        type: "link",
+	                        dataUrl: "",
+	                        desc: desc,
+	                        success: function () {
+	                        },
+	                        cancel: function () { 
+	                        }
+	                    });
+	                    //qq
+	                    wx.onMenuShareQQ({
+	                        title: title, // 分享标题
+	                        link: durl, // 分享链接
+	                        imgUrl: img, // 分享图标
+	                        desc: desc,
+	                        success: function () { },
+	                        cancel: function () { }
+	                    });
+			    	});
+			    }
+			});
+		 
+	}
+ 
 
 	
 
@@ -335,7 +410,20 @@ export class App extends Component {
 		this.talk = [
 			
 		]
-		$.getJSON('./assets/js/data.json',(data)=>{
+
+		obserable.on('renderTalk',()=>{
+			this.setState({
+				indexActive:'hide'
+			})
+			this.renderTalk();
+		});
+
+		obserable.on('playAudio',()=>{
+
+			this.refs['talkAudio'].muted = false;
+			this.refs['talkAudio'].play();
+		})
+		$.getJSON('./assets/js/data.js',(data)=>{
 
 			var s = this;
 			this.talk = data.talk;
@@ -348,12 +436,19 @@ export class App extends Component {
 
 			s.wxappid = data.wxappid;
 
+
+
 			this.state.myHeadImg = data.myHeadImg;
 
-			//this.wxConfig(data.shareTitle,data.shareDesc,data.shareImg,data.wxappid,data.worksid);
+			this.wxConfig(data.shareTitle,data.shareDesc,data.shareImg,data.wxappid,data.worksid);
 			
 			this.forceUpdate();
-			 
+			data.loadingImg = data.loadingImg.concat([
+			 	"./assets/images/bg.jpg",
+			 	"./assets/images/dialog.png",
+			 	"./assets/images/logo.png",
+			 	"./assets/images/logo1.png"
+			]);
 			 s.loading(data.loadingImg,(scale)=>{
 					s.setState({
 						progress:(scale*100|0)+'%'
@@ -370,10 +465,57 @@ export class App extends Component {
 						},
 						success(data){
 							if(data.getret === 0){
-								console.log(data);
+								
 							}
 						}
 					});
+
+						$.ajax({
+							url:'http://api.zmiti.com/v2/weixin/save_userview/',
+							type:'post',
+							data:{
+								worksid:s.worksid,
+								wxopenid:s.openid || 'zmiti-openid'+new Date().getTime(),
+								wxname:'非微信用户',
+								usercity:'北京',
+								longitude:116.3617,
+								latitude:39.89869
+							}
+						}).done((data)=>{
+							if(data.getret === 0 ){
+								
+							}else{
+								alert('save_userview getret : '+ data.getret +' msg : '+ data.getmsg)
+							}
+						},()=>{
+							//alert('save_userview error');
+						})
+
+					   	$.ajax({
+					   		url:'http://api.zmiti.com/v2/weixin/add_wxuser/',
+					   		type:'post',
+					   		data:{
+					   			wxopenid:s.openid || 'zmiti-openid'+new Date().getTime(),
+					   			worksid:s.worksid,
+					   			nickname:'非微信用户',
+					   			headimgurl:'',
+					   			longitude:116.3617,
+					   			latitude:39.89869,
+					   			accuracy:65,
+					   			wxappid:s.wxappid,
+					   			integral:0
+					   		},
+					   		error(){
+					   			alert('add_wxuser: 服务器返回错误');
+					   		},
+					   		success(data){
+					   			if(data.getret === 0){
+					   				
+					   			}else{
+					   				alert('getret  : '+ data.getret + ' msg : ' + data.getmsg+ ' .....');
+					   			}
+					   		}
+					   	});
 
 
 					s.defaultName =  data.username || '智媒体';
@@ -383,9 +525,7 @@ export class App extends Component {
 					
 					s.forceUpdate();
 
-					s.renderTalk();	
-
-				
+					//s.renderTalk();	 
 			});
 
 
@@ -418,9 +558,9 @@ export class App extends Component {
 			this.refs['talkAudio'].pause();
 			this.refs['talkAudio'].muted = true;
 			this.refs['talkAudio'].play();
-			setTimeout(()=>{
+			/*setTimeout(()=>{
 				this.refs['talkAudio'].muted = false;
-			},500);
+			},500);*/
 			if(this.refs['audio'] && this.refs['audio'].paused){
 				this.refs['audio'].play();
 			};
@@ -488,34 +628,38 @@ export class App extends Component {
 		}
 
 		var talkAudio = this.refs['talkAudio'];
-		this.talkTimer = setInterval(()=>{
-			
-		
+
+		setTimeout(()=>{
 			this.state.showGroupName = true;
 			this.forceUpdate();
-			setTimeout(()=>{
-				
-				if(this.talk[this.iNow]){
+			
+			render();
+		},2000)
+
+
+		var render = ()=>{
+			if(this.talk[this.iNow]){
+				setTimeout(()=>{
 					this.state.talkObj.talk.push(this.talk[this.iNow]);
+					talkAudio.muted = false;
 					talkAudio.play();
 	 				this.iNow++;			
 					this.forceUpdate();	
 					setTimeout(()=>{
 						this.state.scrollTop = this.refs['scroller'].offsetHeight - (this.viewH - 85)<=0?0:-(this.refs['scroller'].offsetHeight - (this.viewH - 85));
 						this.forceUpdate();	
-					},100)
+					},100);
+					render();
 					//this.scroll.refresh();
-				}
-				else{
-					clearInterval(this.talkTimer);
-					this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
-					this.scroll.scrollTo(0,this.state.scrollTop,0);
-				}
-			},1800);
 					
+				},this.talk[this.iNow-1]?this.talk[this.iNow-1].duration*1000:2000);
+			}else{
+				this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
+				this.scroll.scrollTo(0,this.state.scrollTop,0);
+			}
+		}
 
-			
-		},2000);
+		
 	}
 }
 
