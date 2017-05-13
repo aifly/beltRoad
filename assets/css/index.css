@@ -272,7 +272,7 @@ input, textarea {
       height: 60px;
       border-radius: 4px; }
   .zmiti-talk-C .zmiti-talk-content aside:first-of-type {
-    color: #eee;
+    color: #365a9b;
     -webkit-transform: scale(0.9) translate3d(0, -6px, 0);
     transform: scale(0.9) translate3d(0, -6px, 0);
     -webkit-transform-origin: left;
