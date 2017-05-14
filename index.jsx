@@ -656,6 +656,9 @@ export class App extends Component {
 			}else{
 				this.scroll = new IScroll(this.refs['zmiti-scroll-C'],{preventDefault:false});
 				this.scroll.scrollTo(0,this.state.scrollTop,0);
+				setTimeout(()=>{
+					this.scroll.refresh();
+				},1000)
 			}
 		}
 
